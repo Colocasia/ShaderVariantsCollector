@@ -15,7 +15,7 @@ namespace ShaderVariantsCollector
         private Dictionary<Shader, List<ShaderVariantData>> shaderVariantsMap = new Dictionary<Shader, List<ShaderVariantData>>();
         private Vector2 scrollPosition = Vector2.zero;
 
-        // PassType颜色映射
+        // PassType颜色映射 - 恢复原来的浅色背景
         private static readonly Dictionary<PassType, Color> PassTypeColors = new Dictionary<PassType, Color>
         {
             { PassType.Normal, new Color(0.8f, 0.9f, 1f, 0.8f) }, // 浅蓝色
@@ -32,6 +32,25 @@ namespace ShaderVariantsCollector
             { PassType.MotionVectors, new Color(0.8f, 1f, 1f, 0.8f) }, // 浅天蓝色
             { PassType.ScriptableRenderPipeline, new Color(1f, 0.9f, 1f, 0.8f) }, // 浅洋红色
             { PassType.ScriptableRenderPipelineDefaultUnlit, new Color(0.85f, 0.85f, 1f, 0.8f) } // 浅薰衣草色
+        };
+        
+        // PassType文字颜色映射 - 使用中等深度的文字颜色以降低对比度
+        private static readonly Dictionary<PassType, Color> PassTypeTextColors = new Dictionary<PassType, Color>
+        {
+            { PassType.Normal, new Color(0.2f, 0.3f, 0.6f) }, // 中深蓝色文字
+            { PassType.Vertex, new Color(0.2f, 0.6f, 0.2f) }, // 中深绿色文字
+            { PassType.VertexLM, new Color(0.6f, 0.4f, 0.2f) }, // 中深橙色文字
+            { PassType.VertexLMRGBM, new Color(0.6f, 0.2f, 0.4f) }, // 中深粉色文字
+            { PassType.ForwardBase, new Color(0.4f, 0.2f, 0.6f) }, // 中深紫色文字
+            { PassType.ForwardAdd, new Color(0.2f, 0.6f, 0.4f) }, // 中深青色文字
+            { PassType.LightPrePassBase, new Color(0.6f, 0.5f, 0.2f) }, // 中深黄色文字
+            { PassType.LightPrePassFinal, new Color(0.3f, 0.3f, 0.6f) }, // 中深紫蓝色文字
+            { PassType.ShadowCaster, new Color(0.3f, 0.3f, 0.3f) }, // 中深灰色文字
+            { PassType.Deferred, new Color(0.6f, 0.3f, 0.3f) }, // 中深红色文字
+            { PassType.Meta, new Color(0.4f, 0.4f, 0.4f) }, // 中深灰色文字
+            { PassType.MotionVectors, new Color(0.2f, 0.5f, 0.6f) }, // 中深天蓝色文字
+            { PassType.ScriptableRenderPipeline, new Color(0.6f, 0.2f, 0.6f) }, // 中深洋红色文字
+            { PassType.ScriptableRenderPipelineDefaultUnlit, new Color(0.3f, 0.3f, 0.6f) } // 中深薰衣草色文字
         };
 
         public ShaderVariantsTreeView(TreeViewState state, ShaderVariantsCollectorWindow window) : base(state)
@@ -224,19 +243,49 @@ namespace ShaderVariantsCollector
         private void DrawPassTypeLabel(Rect rect, PassType passType)
         {
             var passTypeText = passType.ToString();
-            var passTypeLabelWidth = Mathf.Min(GUI.skin.label.CalcSize(new GUIContent(passTypeText)).x + 10, 120);
+            var maxWidth = 180; // 增加最大宽度
+            var calculatedWidth = GUI.skin.label.CalcSize(new GUIContent(passTypeText)).x + 10;
+            var passTypeLabelWidth = Mathf.Min(calculatedWidth, maxWidth);
             var passTypeLabelRect = new Rect(rect.x, rect.y, passTypeLabelWidth, rect.height);
             
             // 绘制PassType背景色
-            if (PassTypeColors.TryGetValue(passType, out var color))
+            if (PassTypeColors.TryGetValue(passType, out var backgroundColor))
             {
-                EditorGUI.DrawRect(passTypeLabelRect, color);
+                EditorGUI.DrawRect(passTypeLabelRect, backgroundColor);
             }
             
-            // 绘制PassType文本
-            var textStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
+            // 绘制PassType文本，使用对应的文字颜色
+            var textColor = PassTypeTextColors.TryGetValue(passType, out var color) ? color : Color.black;
+            var textStyle = new GUIStyle(GUI.skin.label) 
+            { 
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = textColor },
+                fontStyle = FontStyle.Bold, // 加粗文字以进一步提高可读性
+                clipping = TextClipping.Clip // 启用文字裁剪
+            };
+            
+            // 如果文字太长，添加省略号
+            var displayText = passTypeText;
+            if (calculatedWidth > maxWidth)
+            {
+                // 计算能显示的字符数
+                var availableWidth = maxWidth - 20; // 留出省略号的空间
+                var charWidth = GUI.skin.label.CalcSize(new GUIContent("A")).x;
+                var maxChars = Mathf.FloorToInt(availableWidth / charWidth);
+                if (maxChars > 3)
+                {
+                    displayText = passTypeText.Substring(0, Mathf.Min(maxChars - 3, passTypeText.Length)) + "...";
+                }
+            }
+            
             var labelRect = new Rect(passTypeLabelRect.x + 2, passTypeLabelRect.y, passTypeLabelRect.width - 4, passTypeLabelRect.height);
-            EditorGUI.LabelField(labelRect, passTypeText, textStyle);
+            EditorGUI.LabelField(labelRect, displayText, textStyle);
+            
+            // 添加工具提示显示完整文本
+            if (calculatedWidth > maxWidth)
+            {
+                GUI.Label(passTypeLabelRect, new GUIContent("", passTypeText));
+            }
         }
         
         private void DrawShaderRow(Rect rect, Shader shader, int variantCount)
@@ -333,7 +382,7 @@ namespace ShaderVariantsCollector
             
             // 计算PassType标签宽度
             var passTypeText = variant.passType.ToString();
-            var passTypeLabelWidth = Mathf.Min(GUI.skin.label.CalcSize(new GUIContent(passTypeText)).x + 10, 120);
+            var passTypeLabelWidth = Mathf.Min(GUI.skin.label.CalcSize(new GUIContent(passTypeText)).x + 10, 180);
             
             // 绘制关键字（在PassType标签右侧）
             var labelRect = new Rect(rect.x + passTypeLabelWidth, rect.y, rect.width - passTypeLabelWidth - 120, rect.height);
@@ -364,7 +413,7 @@ namespace ShaderVariantsCollector
             
             // 计算PassType标签宽度
             var passTypeText = variant.passType.ToString();
-            var passTypeLabelWidth = Mathf.Min(GUI.skin.label.CalcSize(new GUIContent(passTypeText)).x + 10, 120);
+            var passTypeLabelWidth = Mathf.Min(GUI.skin.label.CalcSize(new GUIContent(passTypeText)).x + 10, 180);
             
             // 绘制关键字（在PassType标签右侧）
             var labelRect = new Rect(rect.x + passTypeLabelWidth, rect.y, rect.width - passTypeLabelWidth - 180, rect.height);
