@@ -10,13 +10,13 @@ namespace ShaderVariantsCollector.Examples
     /// </summary>
     public static class ExampleUsage
     {
-        // [MenuItem("GameUtils/Shader Variants Collector/Examples/Open Collector Window")]
+        // [MenuItem("Tools/Shader Variants Collector/Examples/Open Collector Window")]
         public static void OpenCollectorWindow()
         {
             ShaderVariantsCollectorWindow.ShowWindow();
         }
 
-        // [MenuItem("GameUtils/Shader Variants Collector/Examples/Collect Variants from Project")]
+        // [MenuItem("Tools/Shader Variants Collector/Examples/Collect Variants from Project")]
         public static void CollectVariantsFromProject()
         {
             var variants = ShaderVariantCollector.CollectVariantsFromProject();
@@ -28,7 +28,7 @@ namespace ShaderVariantsCollector.Examples
             }
         }
 
-        // [MenuItem("GameUtils/Shader Variants Collector/Examples/Create Sample Collection")]
+        // [MenuItem("Tools/Shader Variants Collector/Examples/Create Sample Collection")]
         public static void CreateSampleCollection()
         {
             // 创建示例ShaderVariantCollection
@@ -54,7 +54,7 @@ namespace ShaderVariantsCollector.Examples
             EditorGUIUtility.PingObject(collection);
         }
 
-        // [MenuItem("GameUtils/Shader Variants Collector/Examples/Find Variant References")]
+        // [MenuItem("Tools/Shader Variants Collector/Examples/Find Variant References")]
         public static void FindVariantReferences()
         {
             // 示例：查找特定变体的引用
@@ -72,7 +72,7 @@ namespace ShaderVariantsCollector.Examples
             }
         }
 
-        // [MenuItem("GameUtils/Shader Variants Collector/Examples/Warmup Collection")]
+        // [MenuItem("Tools/Shader Variants Collector/Examples/Warmup Collection")]
         public static void WarmupCollection()
         {
             // 示例：预热ShaderVariantCollection
@@ -88,7 +88,7 @@ namespace ShaderVariantsCollector.Examples
             }
         }
 
-        // [MenuItem("GameUtils/Shader Variants Collector/Examples/Check Variant in Collection")]
+        // [MenuItem("Tools/Shader Variants Collector/Examples/Check Variant in Collection")]
         public static void CheckVariantInCollection()
         {
             // 示例：检查变体是否在集合中

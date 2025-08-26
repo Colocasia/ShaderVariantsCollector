@@ -176,7 +176,7 @@ namespace ShaderVariantsCollector
         /// <summary>
         /// 性能测试：强制重新扫描并测量时间
         /// </summary>
-        // [MenuItem("GameUtils/Shader Variants Collector/Test Cache Performance")]
+        // [MenuItem("Tools/Shader Variants Collector/Test Cache Performance")]
         public static void TestCachePerformance()
         {
             var windows = Resources.FindObjectsOfTypeAll<VariantReferencesWindow>();

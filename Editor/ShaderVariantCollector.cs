@@ -593,7 +593,7 @@ namespace ShaderVariantsCollector
         }
 
         // 添加调试方法
-        // [MenuItem("GameUtils/Shader Variants Collector/Debug/Analyze Collection Structure")]
+        // [MenuItem("Tools/Shader Variants Collector/Debug/Analyze Collection Structure")]
         public static void AnalyzeCollectionStructure()
         {
             var collection = Selection.activeObject as ShaderVariantCollection;

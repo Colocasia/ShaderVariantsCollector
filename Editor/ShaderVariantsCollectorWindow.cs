@@ -26,7 +26,7 @@ namespace ShaderVariantsCollector
         private string newShaderToExclude = "";
         private string newKeywordToExclude = "";
 
-        [MenuItem("GameUtils/Shader Variants Collector/Open Editor Window")]
+        [MenuItem("Tools/Shader Variants Collector/Open Editor Window")]
         public static void ShowWindow()
         {
             var window = GetWindow<ShaderVariantsCollectorWindow>("Shader Variants Collector");
@@ -34,7 +34,7 @@ namespace ShaderVariantsCollector
             window.LoadExclusionSettings();
         }
 
-        [MenuItem("GameUtils/Shader Variants Collector/Clear Runtime Cache")]
+        [MenuItem("Tools/Shader Variants Collector/Clear Runtime Cache")]
         public static void ClearRuntimeCache()
         {
             VariantReferencesWindow.ClearRuntimeCache();
@@ -42,7 +42,7 @@ namespace ShaderVariantsCollector
             Debug.Log("Runtime cache cleared.");
         }
 
-        [MenuItem("GameUtils/Shader Variants Collector/Show Cache Stats")]
+        [MenuItem("Tools/Shader Variants Collector/Show Cache Stats")]
         public static void ShowCacheStats()
         {
             string stats = VariantReferencesWindow.GetCacheStats();
